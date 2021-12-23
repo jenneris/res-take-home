@@ -8,8 +8,8 @@ CREATE TABLE IF NOT EXISTS "User" (
 );
 
 -- CreateTable
-CREATE TABLE IF NOT EXISTS "Notifications" (
-    "creatorId" INTEGER,
+CREATE TABLE IF NOT EXISTS "Notification" (
+    "creator_id" INTEGER,
     "content" TEXT,
     "id" SERIAL NOT NULL,
     "has_read" BOOLEAN NOT NULL DEFAULT false,
@@ -19,31 +19,8 @@ CREATE TABLE IF NOT EXISTS "Notifications" (
     PRIMARY KEY ("id")
 );
 
--- CreateIndexIfNotExists
-do
-$$
-declare
-l_count integer;
-begin 
-select count( * )
-into l_count
-from pg_indexes
-    where schemaname = 'public' AND tablename='User' AND
-    indexname='email_unique';
-if l_count = 0 then
-    CREATE UNIQUE INDEX "User.email_unique" ON "User"("email");
-end
-if;
-
-end;
-$$
+-- CreateIndex
+CREATE UNIQUE INDEX "User.email_unique" ON "User"("email");
 
 -- AddForeignKey
-DO $$
-BEGIN
-    IF NOT EXISTS (SELECT * FROM pg_constraint WHERE conname = "Notifications_creatorId_fkey";) THEN
-        ALTER TABLE "Notifications" ADD FOREIGN KEY IF NOT EXISTS ("creatorId") REFERENCES "User"("id") ON DELETE SET NULL ON UPDATE CASCADE;
-    END IF;
-END;
-$$;
-;
+ALTER TABLE "Notification" ADD FOREIGN KEY ("creator_id") REFERENCES "User"("id") ON DELETE SET NULL ON UPDATE CASCADE;

@@ -11,15 +11,15 @@ model User {
   email String  @unique
   id    Int     @id @default(autoincrement())
   name  String?
-  notifications Notifications[]
+  notification Notification[]
 }
 
-model Notifications {
-  creatorId   Int?
+model Notification {
+  creator_id   Int?
   content     String?
   id          Int     @id @default(autoincrement())
   has_read    Boolean @default(false)
   title       String
-  creator     User?   @relation(fields: [creatorId], references: [id])
+  creator     User?   @relation(fields: [creator_id], references: [id])
   created_at   DateTime @default(now())
 }
