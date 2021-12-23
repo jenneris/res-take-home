@@ -41,7 +41,7 @@ app.post(`/api/user`, async (req, res) => {
 
 app.post(`/api/notification`, async (req, res) => {
   const { title, content, creatorEmail } = req.body
-  const result = await prisma.notifications.create({
+  const result = await prisma.notification.create({
     data: {
       title,
       content,
@@ -55,7 +55,7 @@ app.post(`/api/notification`, async (req, res) => {
 app.put('/api/notification/:id', async (req, res) => {
   res.header('Access-Control-Allow-Origin', CLIENT_ADDR);
   const { id } = req.params
-  const post = await prisma.notifications.update({
+  const post = await prisma.notification.update({
     where: {
       id: parseInt(id),
     },
@@ -68,7 +68,7 @@ app.delete(`/api/notification/:id`, cors(), async (req, res) => {
   // res.header('Access-Control-Allow-Origin', CLIENT_ADDR);
 
   const { id } = req.params
-  const post = await prisma.notifications.delete({
+  const post = await prisma.notification.delete({
     where: {
       id: parseInt(id),
     },
@@ -79,7 +79,7 @@ app.delete(`/api/notification/:id`, cors(), async (req, res) => {
 app.get(`/api/notification/:id`, async (req, res) => {
   res.header('Access-Control-Allow-Origin', CLIENT_ADDR);
   const { id } = req.params
-  const post = await prisma.notifications.findUnique({
+  const post = await prisma.notification.findUnique({
     where: {
       id: parseInt(id),
     },
@@ -88,7 +88,7 @@ app.get(`/api/notification/:id`, async (req, res) => {
 })
 
 app.get('/api/notification', async (req, res) => {
-  const notifications = await prisma.notifications.findMany({
+  const notifications = await prisma.notification.findMany({
     where: { has_read: false },
     include: { creator: true },
   })
@@ -97,7 +97,7 @@ app.get('/api/notification', async (req, res) => {
 
 app.get('/api/filterPosts', async (req, res) => {
   const { searchString } = req.query
-  const draftPosts = await prisma.notifications.findMany({
+  const draftPosts = await prisma.notification.findMany({
     where: {
       OR: [
         {
