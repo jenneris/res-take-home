@@ -1,5 +1,5 @@
 -- CreateTable
-CREATE TABLE "User" (
+CREATE TABLE IF NOT EXISTS "User" (
     "email" TEXT NOT NULL,
     "id" SERIAL NOT NULL,
     "name" TEXT,
@@ -8,7 +8,7 @@ CREATE TABLE "User" (
 );
 
 -- CreateTable
-CREATE TABLE "Notifications" (
+CREATE TABLE IF NOT EXISTS "Notifications" (
     "creatorId" INTEGER,
     "content" TEXT,
     "id" SERIAL NOT NULL,
@@ -20,7 +20,7 @@ CREATE TABLE "Notifications" (
 );
 
 -- CreateIndex
-CREATE UNIQUE INDEX "User.email_unique" ON "User"("email");
+CREATE UNIQUE INDEX IF NOT EXISTS "User.email_unique" ON "User"("email");
 
 -- AddForeignKey
-ALTER TABLE "Notifications" ADD FOREIGN KEY ("creatorId") REFERENCES "User"("id") ON DELETE SET NULL ON UPDATE CASCADE;
+ALTER TABLE "Notifications" ADD FOREIGN KEY IF NOT EXISTS ("creatorId") REFERENCES "User"("id") ON DELETE SET NULL ON UPDATE CASCADE;
