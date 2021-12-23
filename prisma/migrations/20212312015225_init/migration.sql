@@ -19,7 +19,7 @@ CREATE TABLE IF NOT EXISTS "Notifications" (
     PRIMARY KEY ("id")
 );
 
--- CreateIndex
+-- CreateIndexIfNotExists
 IF (select 1
 into l_count
 from pg_indexes
