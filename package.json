@@ -1,0 +1,43 @@
+{
+  "name": "prisma-heroku",
+  "version": "1.0.0",
+  "license": "MIT",
+  "scripts": {
+    "start": "REACT_APP_DEV_ENV=LOCAL react-scripts start",
+    "build": "react-scripts build",
+    "test": "react-scripts test",
+    "eject": "react-scripts eject"
+  },
+  "dependencies": {
+    "@emotion/react": "^11.7.1",
+    "@emotion/styled": "^11.6.0",
+    "@mui/core": "^5.0.0-alpha.54",
+    "@mui/icons-material": "^5.2.5",
+    "@mui/lab": "^5.0.0-alpha.61",
+    "@mui/material": "^5.2.5",
+    "@mui/styles": "^5.2.3",
+    "@mui/utils": "^5.2.3",
+    "@prisma/client": "3.6.0",
+    "body-parser": "1.19.1",
+    "cors": "^2.8.5",
+    "express": "4.17.2",
+    "install": "^0.13.0",
+    "npm": "^8.3.0",
+    "prisma": "3.6.0",
+    "react": "^17.0.2",
+    "react-dom": "^17.0.2",
+    "react-scripts": "^5.0.0"
+  },
+  "browserslist": {
+    "production": [
+      ">0.2%",
+      "not dead",
+      "not op_mini all"
+    ],
+    "development": [
+      "last 1 chrome version",
+      "last 1 firefox version",
+      "last 1 safari version"
+    ]
+  }
+}
