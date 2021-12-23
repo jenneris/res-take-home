@@ -119,6 +119,6 @@ app.get('/api/filterPosts', async (req, res) => {
 const PORT = process.env.PORT || 3001
 const server = app.listen(PORT, () =>
   console.log(
-    `🚀 Server ready at: http://localhost:${PORT}\n⭐️ See sample requests: http://pris.ly/e/ts/rest-express#3-using-the-rest-api`,
+    `🚀 Server ready at: http://localhost:${PORT}\n⭐️`,
   ),
 )
