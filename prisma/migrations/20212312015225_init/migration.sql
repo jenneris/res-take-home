@@ -31,7 +31,7 @@ from pg_indexes
     where schemaname = 'public' AND tablename='User' AND
     indexname='email_unique';
 if l_count = 0 then
-CREATE UNIQUE INDEX IF NOT EXISTS "User.email_unique" ON "User"("email");
+    CREATE UNIQUE INDEX "User.email_unique" ON "User"("email");
 end
 if;
 
@@ -39,4 +39,11 @@ end;
 $$
 
 -- AddForeignKey
-ALTER TABLE "Notifications" ADD FOREIGN KEY IF NOT EXISTS ("creatorId") REFERENCES "User"("id") ON DELETE SET NULL ON UPDATE CASCADE;
+DO $$
+BEGIN
+    IF NOT EXISTS (SELECT * FROM pg_constraint WHERE conname = "Notifications_creatorId_fkey";) THEN
+        ALTER TABLE "Notifications" ADD FOREIGN KEY IF NOT EXISTS ("creatorId") REFERENCES "User"("id") ON DELETE SET NULL ON UPDATE CASCADE;
+    END IF;
+END;
+$$;
+;
