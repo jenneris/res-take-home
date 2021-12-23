@@ -14,7 +14,7 @@ CREATE TABLE "Notifications" (
     "id" SERIAL NOT NULL,
     "has_read" BOOLEAN NOT NULL DEFAULT false,
     "title" TEXT NOT NULL,
-    "created_at" TIMESTAMP DEFAULT NOW()
+    "created_at" TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 
     PRIMARY KEY ("id")
 );
