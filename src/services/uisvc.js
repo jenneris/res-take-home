@@ -23,6 +23,5 @@ export const clearNotifications = async (notifications) => {
     const data = await response.json();
     responses.push(data);
     })
-    // const data = await response.json();
     return responses;
 }
