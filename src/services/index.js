@@ -8,7 +8,9 @@ const prisma = new PrismaClient({
 })
 const app = express();
 
-const CLIENT_ADDR = "http://localhost:3000";
+const CLIENT_ADDR = "*";
+// const CLIENT_ADDR = "http://localhost:3000";
+// const HEROKU_ADDR = "https://jenn-test-app.herokuapp.com";
 
 // options are needed for complex requests like delete
 // enable pre-flight request for DELETE request
