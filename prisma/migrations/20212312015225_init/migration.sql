@@ -20,13 +20,23 @@ CREATE TABLE IF NOT EXISTS "Notifications" (
 );
 
 -- CreateIndexIfNotExists
-IF (select 1
+do
+$$
+declare
+l_count integer;
+begin 
+select count( * )
 into l_count
 from pg_indexes
     where schemaname = 'public' AND tablename='User' AND
-    indexname='email_unique';) != 1 THEN
+    indexname='email_unique';
+if l_count = 0 then
 CREATE UNIQUE INDEX IF NOT EXISTS "User.email_unique" ON "User"("email");
-END IF;
+end
+if;
+
+end;
+$$
 
 -- AddForeignKey
 ALTER TABLE "Notifications" ADD FOREIGN KEY IF NOT EXISTS ("creatorId") REFERENCES "User"("id") ON DELETE SET NULL ON UPDATE CASCADE;
