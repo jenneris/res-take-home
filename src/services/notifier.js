@@ -16,7 +16,6 @@ const PORT = process.env.PORT || 3001
 
 // const CLIENT_ADDR = "https://jenn-test-app.herokuapp.com";
 // const CLIENT_ADDR = "http://localhost:3000";
-// const HEROKU_ADDR = "https://jenn-test-app.herokuapp.com";
 
 // jsonifying
 app.use(bodyParser.urlencoded({ extended: true }));
@@ -45,6 +44,10 @@ app.use((req, res, next) => {
 app.use(express.static('build'));
 
 app.get(`/api`, async (req, res) => {
+  res.json({ up: true })
+})
+
+app.post(`/api/notification/push`, async (req, res) => {
   res.json({ up: true })
 })
 
@@ -136,32 +139,4 @@ app.get('/api/filterPosts', async (req, res) => {
 })
 server.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
-});
-
-// Socket config
-io.on('connection', (socket) => {
-  console.log('Connected');
-
-  // On connection start pushing notifications to database
-  const notificationsPush = setInterval(async() => {
-    // create a random notification to test with
-    let title = `title ${Math.floor(Math.random())}`;
-    let content = `content ${Math.floor(Math.random())}`;
-    let data = {
-      title,
-      content,
-      has_read: false,
-      creator: { connect: { email: "jenn@test.com" } },
-    }
-    await prisma.notification.create({
-      data,
-    });
-    console.log('Added New Notification');
-    socket.emit('new-notification', data);
-  }, 3000 + Math.floor(Math.random() * 4000));
-
-  socket.on('disconnect', () => {
-    clearInterval(notificationsPush);
-    console.log('Disconnected');
-  });
 });

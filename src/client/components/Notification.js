@@ -57,11 +57,9 @@ class Notification extends React.Component {
         notificationList: [
           ...this.state.notificationList,
           {
-            action: data.action,
-            name: data.name,
+            title: data.title,
             content: data.content,
-            read: data.read,
-            image: data.image,
+            read: data.has_read,
           },
         ],
       });
