@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState, useEffect } from 'react';
 import NotificationsNoneIcon from '@mui/icons-material/NotificationsNone';
 import NotificationsIcon from '@mui/icons-material/Notifications';
 import { getNotifications, clearNotifications } from "../../services/uisvc";
@@ -15,10 +15,11 @@ import EmailIcon from '@mui/icons-material/Email';
 import Popover from '@mui/material/Popover';
 import Badge from '@mui/material/Badge';
 import IconButton from '@mui/material/IconButton';
+import Button from '@mui/material/Button';
 import Tooltip from '@mui/material/Tooltip';
-import { withStyles } from "@mui/styles";
+import { makeStyles } from '@mui/styles';
 
-const styles = theme => ({
+const useStyles = makeStyles({
   badge: {
     fontSize: "16",
     height: "25px",
@@ -27,110 +28,105 @@ const styles = theme => ({
   }
 });
 
-class Notification extends React.Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-      toggleNotification: false,
-      isLoading: false,
-      notificationList: [],
-      anchorEl: null,
 
-    };
-  }
-  componentDidMount() {
-    this.getNotifications();
-  }
-  componentDidUpdate(previousProps) {
-    if (previousProps.listItems !== this.props.listItems) {
-      this.setState({ listItems: this.props.listItems });
-    }
-  }
+const Notification = ({ socket }) => {
 
-  loadFromSockets() {
-    console.log("loading from sockets.....");
-    const socket = window.io.connect('https://jenn-test-app.herokuapp.com:3001');
+  // const [notifications, setNotifications] = useState({});
 
-    // On reciveing new-notification from server through Sockets & Update the View
-    socket.on('new-notification', (data) => {
-      this.setState({
-        notificationList: [
-          ...this.state.notificationList,
-          {
-            title: data.title,
-            content: data.content,
-            read: data.has_read,
-          },
-        ],
+  const [anchorEl, setAnchorEl] = useState(null);
+
+  const [toggleNotification, setToggleNotification] = useState(false);
+
+  const [isLoading, setIsLoading] = useState(false);
+
+  const [notificationList, setNotificationList] = useState({});
+  
+
+  useEffect(() => {
+    getNotificationInfo();
+    const notificationListener = (notification) => {
+      console.log(notificationList)
+      console.log(`received notification............. ${JSON.stringify(notification)}`);
+      setNotificationList((prevNotifications) => {
+        const newNotifications = {...prevNotifications};
+        newNotifications[notification.id] = notification;
+        return newNotifications;
       });
+    };
+  
+    const deleteNotificationListener = (notificationId) => {
+      setNotificationList((prevNotifications) => {
+        const notificationList = {...prevNotifications};
+        delete notificationList[notificationId];
+        return notificationList;
+      });
+    };
+  
+    socket.on('new-notification', notificationListener);
+    socket.on('deleteNotification', deleteNotificationListener);
+    socket.emit('getNotifications');
 
-      this.setState({ unread: this.state.unread + 1 });
-    });
-  }
+    return () => {
+      socket.off('new-notification', notificationListener);
+      socket.off('deleteNotification', deleteNotificationListener);
+    };
+  }, [socket]);
 
-  getNotifications = async () => {
-    this.setState ({isLoading: true});
+  const classes = useStyles();
+
+  const getNotificationInfo = async () => {
+    setIsLoading(true);
     try{
       console.log("Getting notifications.......");
       const notifications = await getNotifications('user');
       console.log(notifications);
-      this.setState({
-        notificationList: notifications
-      })
-      this.loadFromSockets();
+        setNotificationList(notifications);
     } catch (e) {
-      console.log(e)
-      this.setState({
-        notificationList: []
-      })
+        console.log(e)
+        setNotificationList({});
     } finally {
-        this.setState({isLoading: false});
+        setIsLoading(false);
     }
   }
 
-  toggleNotification = (event) => {
-    const { toggleNotification } = this.state;
-    this.setState({ toggleNotification: !toggleNotification, anchorEl: event.currentTarget });
+  const openClose = (event) => {
+    setToggleNotification(!toggleNotification);
+    setAnchorEl(event.currentTarget);
   };
 
-  clearAllMessages = async () => {
-    console.log("clearing all messages....")
+  const clearAllNotifications = async () => {
+    console.log("clearing all Notifications....")
 
     try{
-      let { notificationList } = this.state;
       notifications = await clearNotifications(notificationList);
-      this.setState({
-        notificationList: notifications
-      })
+      notificationList = notifications
     } catch (e) {
       console.log(e)
-      this.setState({
-        notificationList: []
-      })
+        notificationList = {};
     } finally {
-        this.setState({isLoading: false});
+        setIsLoading(false);
     }
   };
 
-  render() {
-    const { classes } = this.props;
-    const { notificationList, isLoading } = this.state;
     let totalCount = 0;
     let notificationsIcon;
-    let notificationListInfo;
+    let notificationListInfo = [];
     let clearAllIcon;
+
     if(!isLoading && notificationList && notificationList !== null){
-      totalCount = notificationList.length;
-      notificationListInfo = notificationList.map((item, index)=>
+      totalCount = Object.keys(notificationList).length;
+      for(const notification in notificationList){
+        console.log(`notification ${notificationList[notification]}`)
+        notificationListInfo.push(
       <ListItem disablePadding>
       <ListItemButton>
         <ListItemIcon>
           <EmailIcon />
         </ListItemIcon>
-        <ListItemText primary={item.title} secondary= {item.content}/>
+        <ListItemText primary={notificationList[notification].title} secondary= {notificationList[notification].content}/>
       </ListItemButton>
-    </ListItem>
-      )
+    </ListItem>)
+      }
     }
     if (totalCount > 0) {
       notificationsIcon = 
@@ -138,12 +134,13 @@ class Notification extends React.Component {
         <NotificationsIcon 
           fontSize="inherit"
           sx={{ fontSize: "50px", fill:"white"}}
-          onClick={() => this.toggleNotification(event)}
+          onClick={() => openClose(event)}
+          open={toggleNotification}
         />
       </Badge>
       clearAllIcon = 
         <Tooltip title="Clear All">
-          <IconButton  onClick={() => this.clearAllMessages()}>
+          <IconButton  onClick={() => clearAllNotifications()}>
             <ClearAllIcon>
               fontSize="inherit"
               label="clear all"
@@ -156,20 +153,20 @@ class Notification extends React.Component {
             <NotificationsNoneIcon
               fontSize="inherit"
               style={{ fontSize: "50px", fill:"white"}}
-              onClick={() => this.toggleNotification(event)}
+              onClick={() => openClose(event)}
           />
          </Badge>
     }
     const infoBox = 
     <Popover 
     sx={{ marginTop: "77px", width: '100%', minWidth: 400, bgcolor: 'background.paper' }}
-    anchorEl={this.state.anchorEl}
+    anchorEl={anchorEl}
     anchorOrigin={{
       vertical: 'top',
       horizontal: 'right',
     }}
-    open={this.state.toggleNotification}
-    onClose={() => this.toggleNotification(event)}
+    open={toggleNotification}
+    onClose={() => openClose(event)}
   >
     <Box sx={{ width: '100%', minWidth: 400, bgcolor: 'background.paper' }}>
       {clearAllIcon}
@@ -189,13 +186,11 @@ class Notification extends React.Component {
     </Popover>
     return (
       <Grid sx={{ marginTop: "25px", marginRight: "20px"}}> 
-
           {notificationsIcon}
          {infoBox}         
 
       </Grid>
     );
-  }
-}
-
-export default withStyles(styles, { withTheme: true })(Notification);
+  
+    }
+export default Notification;

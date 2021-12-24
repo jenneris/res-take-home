@@ -1,11 +1,24 @@
+const users = new Map();
+const defaultUser = {
+    id: 'default',
+    name: 'anon',
+  };
+const { PrismaClient } = require('@prisma/client');
+const prisma = new PrismaClient({
+    log: ['query', 'info', 'warn', 'error'],
+  })
+const notifications = new Set();
+
+const messageExpirationTimeMS = 5*60 * 1000;
+
 class Connector {
-    constructor(io, socket, prisma) {
+    constructor(io, socket) {
       this.socket = socket;
       this.io = io;
       this.prisma = prisma;
   
-      socket.on('getMessages', () => this.getMessages());
-      socket.on('message', (value) => this.handleMessage(value));
+      socket.on('getNotifications', () => this.getNotifications());
+      socket.on('new-notification', (value) => this.handleNotification(value));
       socket.on('connection', (socket) => {
         console.log('Connected');
       });
@@ -18,24 +31,56 @@ class Connector {
       });
     }
     
-    sendMessage(message) {
-          // create a random notification to test with
-          let title = `title ${Math.floor(Math.random())}`;
-          let content = `content ${Math.floor(Math.random())}`;
-          let data = {
-            title,
-            content,
-            has_read: false,
-            creator: { connect: { email: "jenn@test.com" } },
-          }
-          await prisma.notification.create({
-            data,
-          });
-          console.log('Added New Notification');
-      this.io.sockets.emit('new-notification', data);
+    async saveNotification(notification){
+        console.log("received notification....");
+        let data = {
+        title: notification.title,
+        content: ` content: ${notification.content}`,
+        has_read: false,
+        creator: { connect: { email: "jenn@test.com" } },
+        }
+        await prisma.notification.create({
+        data,
+        });
+        console.log('Added New Notification');
+    }
+
+    async sendNotification(notification) {
+
+        this.io.sockets.emit('new-notification', notification);
     }
     
-    getMessages() {
-      messages.forEach((message) => this.sendMessage(message));
+    getNotifications() {
+        notifications.forEach((notification) => this.sendNotification(notification));
     }
+    disconnect() {
+        users.delete(this.socket);
+    }
+    handleNotification(value) {
+        const message = {
+          user: users.get(this.socket) || defaultUser,
+          title: value.title,
+          content: value.content
+        };
+    
+        notifications.add(message);
+        this.sendNotification(message);
+        this.saveNotification(message);
+    
+        // setTimeout(
+        //   () => {
+        //     notifications.delete(message);
+        //     this.io.sockets.emit('deleteMessage', message.id);
+        //   },
+        //   messageExpirationTimeMS,
+        // );
+      }
   }
+
+  function notify(io) {
+    io.on('connection', (socket) => {
+      new Connector(io, socket);   
+    });
+  };
+  
+  module.exports = notify;

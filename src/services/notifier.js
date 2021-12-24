@@ -4,13 +4,18 @@ const { PrismaClient } = require('@prisma/client');
 const cors = require('cors');
 const app = express();
 const server = require('http').Server(app);
-const io = require('socket.io')(server,   {cors: {
+const socketio = require('socket.io');
+const io = socketio(server,{
+  cors: {
   origin: "*",
   methods: ["GET", "POST", "PUT"]
 }});
+
 const prisma = new PrismaClient({
   log: ['query', 'info', 'warn', 'error'],
 })
+
+var notify = require('./Connector');
 
 const PORT = process.env.PORT || 3001
 
@@ -137,6 +142,13 @@ app.get('/api/filterPosts', async (req, res) => {
   })
   res.json(draftPosts)
 })
+
+notify(io);
+
 server.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
 });
+
+
+
+

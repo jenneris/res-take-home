@@ -1,15 +1,16 @@
-import {ENV, NOTIFICATIONS_URL, USERS_URL} from './constants.js';
+// import {ENV, NOTIFICATIONS_URL, USERS_URL} from '../constants.js';
+import CONSTANTS from '../constants.mjs';
 
 export const getNotifications = async (user) => {
-    const baseUrl = ENV[process.env.REACT_APP_DEV_ENV].BASE_URL;
-    const response = await fetch(`${baseUrl}${NOTIFICATIONS_URL}`);
+    const baseUrl = CONSTANTS.ENV[process.env.REACT_APP_DEV_ENV].BASE_URL;
+    const response = await fetch(`${baseUrl}${CONSTANTS.NOTIFICATIONS_URL}`);
     const data = await response.json();
     return data;
 }
 
 export const getUsers = async (user) => {
-    const baseUrl = ENV[process.env.REACT_APP_DEV_ENV].BASE_URL;
-    const response = await fetch(`${baseUrl}${USERS_URL}`);
+    const baseUrl = CONSTANTS.ENV[process.env.REACT_APP_DEV_ENV].BASE_URL;
+    const response = await fetch(`${baseUrl}${CONSTANTS.USERS_URL}`);
     const data = await response.json();
     return data;
 }
