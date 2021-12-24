@@ -1,5 +1,5 @@
-import React from "react";
-import { getUsers } from "../../services/uisvc";
+import React, { useState, useEffect } from 'react';
+import { getUserList } from "../../services/uisvc";
 import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown';
 import PersonIcon from '@mui/icons-material/Person';
 import Box from '@mui/material/Box';
@@ -12,48 +12,36 @@ import Grid from '@mui/material/Grid';
 import InboxIcon from '@mui/icons-material/Inbox';
 import Popover from '@mui/material/Popover';
 
-class User extends React.Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-      toggleUser: false,
-      isLoading: false,
-      anchorEl: null,
-    };
-  }
-  componentDidMount() {
-    this.getUsers();
-  }
-  componentDidUpdate(previousProps) {
-    if (previousProps.listItems !== this.props.listItems) {
-      this.setState({ listItems: this.props.listItems });
-    }
-  }
+const User = () => {
 
-  getUsers = async () => {
-    this.setState ({isLoading: true});
+  const [toggleUser, setToggleUser] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+  const [anchorEl, setAnchorEl] = useState(null);
+  const [userList, setUserList] = useState([]);
+
+  useEffect(() => {
+    getUserDetails();
+  }, []);
+
+  const getUserDetails = async () => {
+    console.log("Getting user details.....");
+    setIsLoading(true);
     try{
-      const users = await getUsers();
-      this.setState({
-        userList: users
-      })
+      const userResp = await getUserList();
+      setUserList(userResp);
     } catch (e) {
       console.log(e)
-      this.setState({
-        userList: []
-      })
+        setUserList([]);
     } finally {
-        this.setState({isLoading: false});
+        setIsLoading(false);
     }
   }
 
-  toggleUser = (event) => {
-    const { toggleUser } = this.state;
-    this.setState({ toggleUser: !toggleUser, anchorEl: event.currentTarget });
+  const openClose = (event) => {
+    setToggleUser(!toggleUser);
+    setAnchorEl(event.currentTarget);
   };
   
-  render() {
-    const {isLoading, userList } = this.state;
     let userListInfo;
     let listUsersIcon = 
     <div>
@@ -64,12 +52,12 @@ class User extends React.Component {
             <ArrowDropDownIcon
                 fontSize="inherit"
                 style={{ fontSize: "30px", fill:"white"}}
-                onClick={() => this.toggleUser(event)}
+                onClick={() => openClose(event)}
             />;
     </div>
     if(!isLoading && userList && userList !== null){
       userListInfo = userList.map((item, index)=>
-      <ListItem disablePadding>
+      <ListItem key={index} disablePadding>
       <ListItemButton>
         <PersonIcon>
           <InboxIcon />
@@ -82,13 +70,13 @@ class User extends React.Component {
   const infoBox = 
   <Popover 
   sx={{ marginTop: "77px", width: '100%', minWidth: 400, bgcolor: 'background.paper' }}
-  anchorEl={this.state.anchorEl}
+  anchorEl={anchorEl}
   anchorOrigin={{
     vertical: 'top',
     horizontal: 'right',
   }}
-  open={this.state.toggleUser}
-  onClose={() => this.toggleUser(event)}
+  open={toggleUser}
+  onClose={() => openClose(event)}
 >
   <Box sx={{ width: '100%', minWidth: 400, bgcolor: 'background.paper' }}>
     <List
@@ -112,6 +100,5 @@ class User extends React.Component {
       </Grid>
     );
   }
-}
 
 export default User;

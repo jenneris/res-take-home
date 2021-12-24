@@ -18,21 +18,22 @@ function App() {
     return (
         <div className="App">
             <header className="App-header">
-                <Grid container spacing={1} justifyContent="flex-end">
-                    <Grid item xs={'auto'}>
-                        <User/>
-                    </Grid>
+
 
                     { socket ? (
+                    <Grid container spacing={1} justifyContent="flex-end">
+                    <Grid item xs={'auto'}>
+                        <User socket={socket}/>
+                    </Grid>
                     <Grid item xs={'auto'}>
                      <Notification socket={socket} />
                      <NewNotification socket={socket} />
                     </Grid>
+                    </Grid>  
                         ) : (
                     <div>Not Connected</div>
                         )}
-
-                </Grid>     
+   
             </header>
         </div>
       );

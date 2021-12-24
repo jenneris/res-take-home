@@ -15,7 +15,6 @@ import EmailIcon from '@mui/icons-material/Email';
 import Popover from '@mui/material/Popover';
 import Badge from '@mui/material/Badge';
 import IconButton from '@mui/material/IconButton';
-import Button from '@mui/material/Button';
 import Tooltip from '@mui/material/Tooltip';
 import { makeStyles } from '@mui/styles';
 
@@ -31,8 +30,6 @@ const useStyles = makeStyles({
 
 const Notification = ({ socket }) => {
 
-  // const [notifications, setNotifications] = useState({});
-
   const [anchorEl, setAnchorEl] = useState(null);
 
   const [toggleNotification, setToggleNotification] = useState(false);
@@ -45,7 +42,6 @@ const Notification = ({ socket }) => {
   useEffect(() => {
     getNotificationInfo();
     const notificationListener = (notification) => {
-      console.log(notificationList)
       console.log(`received notification............. ${JSON.stringify(notification)}`);
       setNotificationList((prevNotifications) => {
         const newNotifications = {...prevNotifications};
@@ -79,7 +75,6 @@ const Notification = ({ socket }) => {
     try{
       console.log("Getting notifications.......");
       const notifications = await getNotifications('user');
-      console.log(notifications);
         setNotificationList(notifications);
     } catch (e) {
         console.log(e)
@@ -98,11 +93,11 @@ const Notification = ({ socket }) => {
     console.log("clearing all Notifications....")
 
     try{
-      notifications = await clearNotifications(notificationList);
-      notificationList = notifications
+      const notifications = await clearNotifications(notificationList);
+      setNotificationList({});
     } catch (e) {
       console.log(e)
-        notificationList = {};
+        setNotificationList({});
     } finally {
         setIsLoading(false);
     }
@@ -116,9 +111,8 @@ const Notification = ({ socket }) => {
     if(!isLoading && notificationList && notificationList !== null){
       totalCount = Object.keys(notificationList).length;
       for(const notification in notificationList){
-        console.log(`notification ${notificationList[notification]}`)
         notificationListInfo.push(
-      <ListItem disablePadding>
+      <ListItem key={notificationList[notification].id} disablePadding>
       <ListItemButton>
         <ListItemIcon>
           <EmailIcon />

@@ -143,12 +143,10 @@ app.get('/api/filterPosts', async (req, res) => {
   res.json(draftPosts)
 })
 
-notify(io);
-
 server.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
 });
 
-
+notify(io);
 
 

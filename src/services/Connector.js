@@ -1,3 +1,5 @@
+const uuidv4 = require('uuid').v4;
+
 const users = new Map();
 const defaultUser = {
     id: 'default',
@@ -9,7 +11,7 @@ const prisma = new PrismaClient({
   })
 const notifications = new Set();
 
-const messageExpirationTimeMS = 5*60 * 1000;
+const notificationExpirationTimeMS = 5*2 * 1000;
 
 class Connector {
     constructor(io, socket) {
@@ -39,10 +41,11 @@ class Connector {
         has_read: false,
         creator: { connect: { email: "jenn@test.com" } },
         }
-        await prisma.notification.create({
+        const response = await prisma.notification.create({
         data,
         });
-        console.log('Added New Notification');
+        console.log(`1Added New Notification ${JSON.stringify(response)}`);
+        return response;
     }
 
     async sendNotification(notification) {
@@ -56,23 +59,26 @@ class Connector {
     disconnect() {
         users.delete(this.socket);
     }
-    handleNotification(value) {
-        const message = {
-          user: users.get(this.socket) || defaultUser,
-          title: value.title,
-          content: value.content
+    async handleNotification(value) {
+        const notification = {
+            // id: uuidv4(),
+            user: users.get(this.socket) || defaultUser,
+            title: value.title,
+            content: value.content
         };
     
-        notifications.add(message);
-        this.sendNotification(message);
-        this.saveNotification(message);
+        notifications.add(notification);
+        const response = await this.saveNotification(notification);
+        console.log(`Added New Notification ${JSON.stringify(response)}`);
+        notification.id = response.id;
+        this.sendNotification(notification);
     
         // setTimeout(
         //   () => {
-        //     notifications.delete(message);
-        //     this.io.sockets.emit('deleteMessage', message.id);
+        //     notifications.delete(notification);
+        //     this.io.sockets.emit('deleteNotification', notification.id);
         //   },
-        //   messageExpirationTimeMS,
+        //   notificationExpirationTimeMS,
         // );
       }
   }
