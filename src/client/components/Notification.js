@@ -49,7 +49,7 @@ class Notification extends React.Component {
 
   loadFromSockets() {
     console.log("loading from sockets.....");
-    const socket = window.io.connect('http://localhost:3001');
+    const socket = window.io.connect('https://jenn-test-app.herokuapp.com:3001');
 
     // On reciveing new-notification from server through Sockets & Update the View
     socket.on('new-notification', (data) => {
