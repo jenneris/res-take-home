@@ -2,26 +2,47 @@ const express = require('express');
 const bodyParser = require('body-parser');
 const { PrismaClient } = require('@prisma/client');
 const cors = require('cors');
-
+const app = express();
+const server = require('http').Server(app);
+const io = require('socket.io')(server,   {cors: {
+  origin: "*",
+  methods: ["GET", "POST", "PUT"]
+}});
 const prisma = new PrismaClient({
   log: ['query', 'info', 'warn', 'error'],
 })
-const app = express();
 
-const CLIENT_ADDR = "*";
+const PORT = process.env.PORT || 3001
+
+// const CLIENT_ADDR = "https://jenn-test-app.herokuapp.com";
 // const CLIENT_ADDR = "http://localhost:3000";
 // const HEROKU_ADDR = "https://jenn-test-app.herokuapp.com";
 
-// options are needed for complex requests like delete
-// enable pre-flight request for DELETE request
-app.options('/api/notification/:id', cors());
-app.use(function(req, res, next) {
-  res.setHeader('Access-Control-Allow-Origin', CLIENT_ADDR);
+// jsonifying
+app.use(bodyParser.urlencoded({ extended: true }));
+app.use(bodyParser.json());
+
+// CORS:
+app.use((req, res, next) => {
+  res.setHeader('Access-Control-Allow-Origin', '*');
+  res.setHeader('Access-Control-Allow-Credentials', 'true');
+  res.setHeader(
+    'Access-Control-Allow-Methods',
+    'GET,HEAD,OPTIONS,POST,PUT,DELETE',
+  );
+
+  // cache control
+  res.setHeader('Cache-Control', 'no-cache');
+
+  res.setHeader(
+    'Access-Control-Allow-Headers',
+    'Access-Control-Allow-Headers, Origin,Accept, X-Requested-With, Content-Type, Acc' +
+    'ess-Control-Request-Method, Access-Control-Request-Headers',
+  );
   next();
 });
 
-app.use(bodyParser.json());
-app.use(express.static('public'));
+app.use(express.static('build'));
 
 app.get(`/api`, async (req, res) => {
   res.json({ up: true })
@@ -55,7 +76,6 @@ app.post(`/api/notification`, async (req, res) => {
 })
 
 app.put('/api/notification/:id', async (req, res) => {
-  res.header('Access-Control-Allow-Origin', CLIENT_ADDR);
   const { id } = req.params
   const post = await prisma.notification.update({
     where: {
@@ -67,8 +87,6 @@ app.put('/api/notification/:id', async (req, res) => {
 })
 
 app.delete(`/api/notification/:id`, cors(), async (req, res) => {
-  // res.header('Access-Control-Allow-Origin', CLIENT_ADDR);
-
   const { id } = req.params
   const post = await prisma.notification.delete({
     where: {
@@ -79,7 +97,6 @@ app.delete(`/api/notification/:id`, cors(), async (req, res) => {
 })
 
 app.get(`/api/notification/:id`, async (req, res) => {
-  res.header('Access-Control-Allow-Origin', CLIENT_ADDR);
   const { id } = req.params
   const post = await prisma.notification.findUnique({
     where: {
@@ -117,10 +134,34 @@ app.get('/api/filterPosts', async (req, res) => {
   })
   res.json(draftPosts)
 })
+server.listen(PORT, () => {
+  console.log(`Server running on port ${PORT}`);
+});
 
-const PORT = process.env.PORT || 3001
-const server = app.listen(PORT, () =>
-  console.log(
-    `🚀 Server ready at: http://localhost:${PORT}\n⭐️`,
-  ),
-)
+// Socket config
+io.on('connection', (socket) => {
+  console.log('Connected');
+
+  // On connection start pushing notifications to database
+  const notificationsPush = setInterval(async() => {
+    // create a random notification to test with
+    let title = `title ${Math.floor(Math.random())}`;
+    let content = `content ${Math.floor(Math.random())}`;
+    let data = {
+      title,
+      content,
+      has_read: false,
+      creator: { connect: { email: "jenn@test.com" } },
+    }
+    await prisma.notification.create({
+      data,
+    });
+    console.log('Added New Notification');
+    socket.emit('new-notification', data);
+  }, 3000 + Math.floor(Math.random() * 4000));
+
+  socket.on('disconnect', () => {
+    clearInterval(notificationsPush);
+    console.log('Disconnected');
+  });
+});

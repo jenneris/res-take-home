@@ -1,4 +1,4 @@
-import {ENV, NOTIFICATIONS_URL, USERS_URL} from '../constants.js';
+import {ENV, NOTIFICATIONS_URL, USERS_URL} from './constants.js';
 
 export const getNotifications = async (user) => {
     const baseUrl = ENV[process.env.REACT_APP_DEV_ENV].BASE_URL;

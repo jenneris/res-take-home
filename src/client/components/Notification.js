@@ -1,7 +1,7 @@
 import React from "react";
 import NotificationsNoneIcon from '@mui/icons-material/NotificationsNone';
 import NotificationsIcon from '@mui/icons-material/Notifications';
-import { getNotifications, clearNotifications } from "../services/uisvc";
+import { getNotifications, clearNotifications } from "../../services/uisvc";
 import ClearAllIcon from '@mui/icons-material/ClearAll';
 import Box from '@mui/material/Box';
 import List from '@mui/material/List';
@@ -47,13 +47,39 @@ class Notification extends React.Component {
     }
   }
 
+  loadFromSockets() {
+    console.log("loading from sockets.....");
+    const socket = window.io.connect('http://localhost:3001');
+
+    // On reciveing new-notification from server through Sockets & Update the View
+    socket.on('new-notification', (data) => {
+      this.setState({
+        notificationList: [
+          ...this.state.notificationList,
+          {
+            action: data.action,
+            name: data.name,
+            content: data.content,
+            read: data.read,
+            image: data.image,
+          },
+        ],
+      });
+
+      this.setState({ unread: this.state.unread + 1 });
+    });
+  }
+
   getNotifications = async () => {
     this.setState ({isLoading: true});
     try{
+      console.log("Getting notifications.......");
       const notifications = await getNotifications('user');
+      console.log(notifications);
       this.setState({
         notificationList: notifications
       })
+      this.loadFromSockets();
     } catch (e) {
       console.log(e)
       this.setState({
