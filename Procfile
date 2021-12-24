@@ -1,4 +1,4 @@
 web: npm start
-api: npm run server
+api: nodemon src/services/notifier.js
 
 release: npx prisma migrate deploy
