@@ -18,25 +18,25 @@ function App() {
     return (
         <div className="App">
             <header className="App-header">
-
-
-                    { socket ? (
-                    <Grid container spacing={1} justifyContent="flex-end">
+                <Grid container spacing={1} justifyContent="flex-end">
                     <Grid item xs={'auto'}>
-                        <User socket={socket}/>
+                        <User socket={socket} />
                     </Grid>
-                    <Grid item xs={'auto'}>
-                     <Notification socket={socket} />
-                     <NewNotification socket={socket} />
-                    </Grid>
-                    </Grid>  
-                        ) : (
-                    <div>Not Connected</div>
-                        )}
-   
+
+                    {socket ? (
+
+                        <Grid item xs={'auto'}>
+                            <Notification socket={socket} />
+                            <NewNotification socket={socket} />
+                        </Grid>
+
+                    ) : (
+                        <div>Not Connected</div>
+                    )}
+                </Grid>
             </header>
         </div>
-      );
-    }
-    
+    );
+}
+
 export default App;

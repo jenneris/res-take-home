@@ -37,27 +37,27 @@ const Notification = ({ socket }) => {
   const [isLoading, setIsLoading] = useState(false);
 
   const [notificationList, setNotificationList] = useState({});
-  
+
 
   useEffect(() => {
     getNotificationInfo();
     const notificationListener = (notification) => {
       console.log(`received notification............. ${JSON.stringify(notification)}`);
       setNotificationList((prevNotifications) => {
-        const newNotifications = {...prevNotifications};
+        const newNotifications = { ...prevNotifications };
         newNotifications[notification.id] = notification;
         return newNotifications;
       });
     };
-  
+
     const deleteNotificationListener = (notificationId) => {
       setNotificationList((prevNotifications) => {
-        const notificationList = {...prevNotifications};
+        const notificationList = { ...prevNotifications };
         delete notificationList[notificationId];
         return notificationList;
       });
     };
-  
+
     socket.on('new-notification', notificationListener);
     socket.on('deleteNotification', deleteNotificationListener);
     socket.emit('getNotifications');
@@ -72,15 +72,15 @@ const Notification = ({ socket }) => {
 
   const getNotificationInfo = async () => {
     setIsLoading(true);
-    try{
+    try {
       console.log("Getting notifications.......");
       const notifications = await getNotifications('user');
-        setNotificationList(notifications);
+      setNotificationList(notifications);
     } catch (e) {
-        console.log(e)
-        setNotificationList({});
+      console.log(e)
+      setNotificationList({});
     } finally {
-        setIsLoading(false);
+      setIsLoading(false);
     }
   }
 
@@ -92,99 +92,99 @@ const Notification = ({ socket }) => {
   const clearAllNotifications = async () => {
     console.log("clearing all Notifications....")
 
-    try{
+    try {
       const notifications = await clearNotifications(notificationList);
       setNotificationList({});
     } catch (e) {
       console.log(e)
-        setNotificationList({});
+      setNotificationList({});
     } finally {
-        setIsLoading(false);
+      setIsLoading(false);
     }
   };
 
-    let totalCount = 0;
-    let notificationsIcon;
-    let notificationListInfo = [];
-    let clearAllIcon;
+  let totalCount = 0;
+  let notificationsIcon;
+  let notificationListInfo = [];
+  let clearAllIcon;
 
-    if(!isLoading && notificationList && notificationList !== null){
-      totalCount = Object.keys(notificationList).length;
-      for(const notification in notificationList){
-        notificationListInfo.push(
-      <ListItem key={notificationList[notification].id} disablePadding>
-      <ListItemButton>
-        <ListItemIcon>
-          <EmailIcon />
-        </ListItemIcon>
-        <ListItemText primary={notificationList[notification].title} secondary= {notificationList[notification].content}/>
-      </ListItemButton>
-    </ListItem>)
-      }
+  if (!isLoading && notificationList && notificationList !== null) {
+    totalCount = Object.keys(notificationList).length;
+    for (const notification in notificationList) {
+      notificationListInfo.push(
+        <ListItem key={notificationList[notification].id} disablePadding>
+          <ListItemButton>
+            <ListItemIcon>
+              <EmailIcon />
+            </ListItemIcon>
+            <ListItemText primary={notificationList[notification].title} secondary={notificationList[notification].content} />
+          </ListItemButton>
+        </ListItem>)
     }
-    if (totalCount > 0) {
-      notificationsIcon = 
+  }
+  if (totalCount > 0) {
+    notificationsIcon =
       <Badge badgeContent={totalCount} color="primary" classes={{ badge: classes.badge }}>
-        <NotificationsIcon 
+        <NotificationsIcon
           fontSize="inherit"
-          sx={{ fontSize: "50px", fill:"white"}}
+          sx={{ fontSize: "50px", fill: "white" }}
           onClick={() => openClose(event)}
           open={toggleNotification}
         />
       </Badge>
-      clearAllIcon = 
-        <Tooltip title="Clear All">
-          <IconButton  onClick={() => clearAllNotifications()}>
-            <ClearAllIcon>
-              fontSize="inherit"
-              label="clear all"
-            </ClearAllIcon>
-          </IconButton>
-        </Tooltip>
-      } else {
-        notificationsIcon =
-          <Badge badgeContent={totalCount} color="primary">
-            <NotificationsNoneIcon
-              fontSize="inherit"
-              style={{ fontSize: "50px", fill:"white"}}
-              onClick={() => openClose(event)}
-          />
-         </Badge>
-    }
-    const infoBox = 
-    <Popover 
-    sx={{ marginTop: "77px", width: '100%', minWidth: 400, bgcolor: 'background.paper' }}
-    anchorEl={anchorEl}
-    anchorOrigin={{
-      vertical: 'top',
-      horizontal: 'right',
-    }}
-    open={toggleNotification}
-    onClose={() => openClose(event)}
-  >
-    <Box sx={{ width: '100%', minWidth: 400, bgcolor: 'background.paper' }}>
-      {clearAllIcon}
-      <List
-      sx={{ width: '100%', minWidth: 400, bgcolor: 'background.paper' }}
-      component="nav"
-      aria-labelledby="notification-list"
-      subheader={
-        <ListSubheader component="div" id="notification-list-subheader">
-          Notifications
-        </ListSubheader>
-      }
-    > 
-        {notificationListInfo}
+    clearAllIcon =
+      <Tooltip title="Clear All">
+        <IconButton onClick={() => clearAllNotifications()}>
+          <ClearAllIcon>
+            fontSize="inherit"
+            label="clear all"
+          </ClearAllIcon>
+        </IconButton>
+      </Tooltip>
+  } else {
+    notificationsIcon =
+      <Badge badgeContent={totalCount} color="primary">
+        <NotificationsNoneIcon
+          fontSize="inherit"
+          style={{ fontSize: "50px", fill: "white" }}
+          onClick={() => openClose(event)}
+        />
+      </Badge>
+  }
+  const infoBox =
+    <Popover
+      sx={{ marginTop: "77px", width: '100%', minWidth: 400, bgcolor: 'background.paper' }}
+      anchorEl={anchorEl}
+      anchorOrigin={{
+        vertical: 'top',
+        horizontal: 'right',
+      }}
+      open={toggleNotification}
+      onClose={() => openClose(event)}
+    >
+      <Box sx={{ width: '100%', minWidth: 400, bgcolor: 'background.paper' }}>
+        {clearAllIcon}
+        <List
+          sx={{ width: '100%', minWidth: 400, bgcolor: 'background.paper' }}
+          component="nav"
+          aria-labelledby="notification-list"
+          subheader={
+            <ListSubheader component="div" id="notification-list-subheader">
+              Notifications
+            </ListSubheader>
+          }
+        >
+          {notificationListInfo}
         </List>
-    </Box>
+      </Box>
     </Popover>
-    return (
-      <Grid sx={{ marginTop: "25px", marginRight: "20px"}}> 
-          {notificationsIcon}
-         {infoBox}         
+  return (
+    <Grid sx={{ marginTop: "25px", marginRight: "20px" }}>
+      {notificationsIcon}
+      {infoBox}
 
-      </Grid>
-    );
-  
-    }
+    </Grid>
+  );
+
+}
 export default Notification;

@@ -5,11 +5,12 @@ const cors = require('cors');
 const app = express();
 const server = require('http').Server(app);
 const socketio = require('socket.io');
-const io = socketio(server,{
+const io = socketio(server, {
   cors: {
-  origin: "*",
-  methods: ["GET", "POST", "PUT"]
-}});
+    origin: "*",
+    methods: ["GET", "POST", "PUT"]
+  }
+});
 
 const prisma = new PrismaClient({
   log: ['query', 'info', 'warn', 'error'],
@@ -89,7 +90,7 @@ app.put('/api/notification/:id', async (req, res) => {
     where: {
       id: parseInt(id),
     },
-    data: { has_read: false},
+    data: { has_read: false },
   })
   res.json(post)
 })
