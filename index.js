@@ -5,7 +5,6 @@ const cors = require('cors');
 const app = express();
 const server = require('http').Server(app);
 const socketio = require('socket.io');
-
 const io = socketio(server, {
   cors: {
     origin: "*",
@@ -17,7 +16,7 @@ const prisma = new PrismaClient({
   log: ['query', 'info', 'warn', 'error'],
 })
 
-var notify = require('./Connector');
+var { notify, saveNotification } = require('./Connector');
 
 const PORT = process.env.PORT || 3001
 
@@ -74,17 +73,28 @@ app.post(`/api/user`, async (req, res) => {
 
 app.post(`/api/notification`, async (req, res) => {
   const { title, content, creatorEmail, impact_area, impact_location } = req.body
-  const notifications = await prisma.notification.create({
-    data: {
-      title,
-      content,
-      has_read: false,
-      creator: { connect: { email: creatorEmail } },
-      impact_area,
-      impact_location,
-    },
-  })
-  res.json(notifications)
+  const data = {
+    title,
+    content,
+    has_read: false,
+    creatorEmail,
+    impactArea: impact_area,
+    impactLocation: impact_location,
+  };
+  saveNotification(data);
+
+
+  // const notifications = await prisma.notification.create({
+  //   data: {
+  //     title,
+  //     content,
+  //     has_read: false,
+  //     creator: { connect: { email: creatorEmail } },
+  //     impact_area,
+  //     impact_location,
+  //   },
+  // })
+  // res.json(notifications)
 })
 
 app.put('/api/notification/:id', async (req, res) => {
@@ -159,38 +169,10 @@ app.get('/api/notification/user/:id', async (req, res) => {
   res.json(notifications)
 })
 
-  async function saveNotification(notification) {
-  console.log(`received notification.... ${notification}`);
-  let data = {
-      title: notification.title,
-      content: ` content: ${notification.content}`,
-      has_read: false,
-      creator_id: parseInt(notification.creator_id) || 1,
-      impact_area: notification.impactArea,
-      impact_location: notification.impactLocation,
-      // creator: { connect: { email: "jenn@test.com" } },
-  }
-  let response;
-  try {
-      response = await prisma.notification.create({
-          data,
-      });
-  }
-  catch (e) {
-      console.log(e.message);
-  }
-  finally {
-      console.log(`Added New Notification To Postgres ${JSON.stringify(response)}`);
-      return response;
-  }
-}
-
 server.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
 });
 
 notify(io);
-
-module.exports = saveNotification;
 
 
