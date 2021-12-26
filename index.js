@@ -16,8 +16,16 @@ const prisma = new PrismaClient({
   log: ['query', 'info', 'warn', 'error'],
 })
 
-const { notify } = require('./Connector');
-const { saveNotification } = require('./server');
+const notify = require('./Connector');
+const {
+  saveNotification,
+  updateNotification,
+  getAllUsers, createUser,
+  getNotificationsNotByUser, 
+  deleteNotification,
+  getNotification,
+  searchNotifications,
+} = require('./serverUtils');
 
 const PORT = process.env.PORT || 3001
 
@@ -59,16 +67,15 @@ app.post(`/api/notification/push`, async (req, res) => {
 })
 
 app.get(`/api/user`, async (req, res) => {
-  const users = await prisma.user.findMany();
+  const users = await getAllUsers();
   res.json(users);
 })
 
 app.post(`/api/user`, async (req, res) => {
-  const user = await prisma.user.create({
-    data: {
-      ...req.body,
-    },
-  })
+  const data = {
+    ...req.body,
+  };
+  const user = await createUser(data);
   res.json(user)
 })
 
@@ -82,7 +89,8 @@ app.post(`/api/notification`, async (req, res) => {
     impactArea: impact_area,
     impactLocation: impact_location,
   };
-  saveNotification(data);
+  const notifications = await saveNotification(data);
+  res.json(notifications);
 
 
   // const notifications = await prisma.notification.create({
@@ -100,75 +108,34 @@ app.post(`/api/notification`, async (req, res) => {
 
 app.put('/api/notification/:id', async (req, res) => {
   const { id } = req.params
-  const notifications = await prisma.notification.update({
-    where: {
-      id: parseInt(id),
-    },
-    data: { has_read: false },
-  })
-  res.json(notifications)
+  const response = await updateNotification(id);
+  res.json(response)
 })
 
 app.delete(`/api/notification/:id`, cors(), async (req, res) => {
   const { id } = req.params
-  const notifications = await prisma.notification.delete({
-    where: {
-      id: parseInt(id),
-    },
-  })
-  res.json(notifications)
+  const response = await deleteNotification(id);
+  res.json(response);
 })
 
 app.get(`/api/notification/:id`, async (req, res) => {
   const { id } = req.params
-  const notifications = await prisma.notification.findUnique({
-    where: {
-      id: parseInt(id),
-    },
-  })
-  res.json(notifications)
-})
-
-app.get('/api/notification', async (req, res) => {
-  const notifications = await prisma.notification.findMany({
-    where: { has_read: false },
-    include: { creator: true },
-  })
+  const response = await getNotification(id);
   res.json(notifications)
 })
 
 app.get('/api/notification', async (req, res) => {
   const { searchString } = req.query
-  const notifications = await prisma.notification.findMany({
-    where: {
-      OR: [
-        {
-          title: {
-            contains: searchString,
-          },
-        },
-        {
-          content: {
-            contains: searchString,
-          },
-        },
-      ],
-    },
-  })
+  const notifications = searchNotifications(searchString);
   res.json(notifications)
 })
 
 app.get('/api/notification/user/:id', async (req, res) => {
   const { id } = req.params
-  const notifications = await prisma.notification.findMany({
-    where: {
-      creator_id: {
-        not: parseInt(id),
-      },
-    },
-  })
+  const notifications = await getNotificationsNotByUser(id);
   res.json(notifications)
 })
+
 
 server.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);

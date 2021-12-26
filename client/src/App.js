@@ -15,8 +15,8 @@ export default function App() {
     };
 
     useEffect(() => {
-        // const newSocket = io(`http://${window.location.hostname}:3001`);
-        const newSocket = io(`https://platform-notification-service.herokuapp.com`);
+        const newSocket = io(`http://${window.location.hostname}:3001`);
+        // const newSocket = io(`https://platform-notification-service.herokuapp.com`);
         setSocket(newSocket);
         setCurrentUserId(currentUserId || "1");
         return () => newSocket.close();
