@@ -1,4 +1,4 @@
-import {saveNotification}  from './index';
+const saveNotification = require('./index');
 
 
 const users = new Map();

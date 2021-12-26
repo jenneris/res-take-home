@@ -159,7 +159,7 @@ app.get('/api/notification/user/:id', async (req, res) => {
   res.json(notifications)
 })
 
-export const saveNotification = async (notification) => {
+  async function saveNotification(notification) {
   console.log(`received notification.... ${notification}`);
   let data = {
       title: notification.title,
@@ -190,5 +190,7 @@ server.listen(PORT, () => {
 });
 
 notify(io);
+
+module.exports = saveNotification;
 
 
