@@ -2,8 +2,9 @@
   "name": "notifications",
   "version": "1.0.0",
   "license": "MIT",
+  "main": "index.js",
   "scripts": {
-    "start": "node ./src/services/notifier.js",
+    "start": "node index.js",
     "heroku-postbuild": "cd client && npm install && npm run build",
     "test:server": "jest"
   },
