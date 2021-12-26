@@ -1,4 +1,5 @@
-const uuidv4 = require('uuid').v4;
+import {saveNotification}  from './index';
+
 
 const users = new Map();
 const defaultUser = {
@@ -33,32 +34,6 @@ class Connector {
         });
     }
 
-    async saveNotification(notification) {
-        console.log(`received notification.... ${notification}`);
-        let data = {
-            title: notification.title,
-            content: ` content: ${notification.content}`,
-            has_read: false,
-            creator_id: parseInt(notification.creator_id) || 1,
-            impact_area: notification.impactArea,
-            impact_location: notification.impactLocation,
-            // creator: { connect: { email: "jenn@test.com" } },
-        }
-        let response;
-        try {
-            response = await prisma.notification.create({
-                data,
-            });
-        }
-        catch (e) {
-            console.log(e.message);
-        }
-        finally {
-            console.log(`1Added New Notification ${JSON.stringify(response)}`);
-            return response;
-        }
-    }
-
     async sendNotification(notification) {
 
         this.io.sockets.emit('new-notification', notification);
@@ -80,7 +55,7 @@ class Connector {
         };
 
         notifications.add(notification);
-        const response = await this.saveNotification(notification);
+        const response = await saveNotification.saveNotification(notification);
         console.log(`Added New Notification ${JSON.stringify(response)}`);
         notification.id = response.id;
         this.sendNotification(notification);

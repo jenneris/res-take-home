@@ -5,6 +5,7 @@ const cors = require('cors');
 const app = express();
 const server = require('http').Server(app);
 const socketio = require('socket.io');
+
 const io = socketio(server, {
   cors: {
     origin: "*",
@@ -157,6 +158,32 @@ app.get('/api/notification/user/:id', async (req, res) => {
   })
   res.json(notifications)
 })
+
+export const saveNotification = async (notification) => {
+  console.log(`received notification.... ${notification}`);
+  let data = {
+      title: notification.title,
+      content: ` content: ${notification.content}`,
+      has_read: false,
+      creator_id: parseInt(notification.creator_id) || 1,
+      impact_area: notification.impactArea,
+      impact_location: notification.impactLocation,
+      // creator: { connect: { email: "jenn@test.com" } },
+  }
+  let response;
+  try {
+      response = await prisma.notification.create({
+          data,
+      });
+  }
+  catch (e) {
+      console.log(e.message);
+  }
+  finally {
+      console.log(`Added New Notification To Postgres ${JSON.stringify(response)}`);
+      return response;
+  }
+}
 
 server.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
