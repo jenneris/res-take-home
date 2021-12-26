@@ -39,16 +39,24 @@ class Connector {
             title: notification.title,
             content: ` content: ${notification.content}`,
             has_read: false,
-            creator_id: notification.creator_id,
+            creator_id: parseInt(notification.creator_id) || 1,
             impact_area: notification.impactArea,
             impact_location: notification.impactLocation,
             // creator: { connect: { email: "jenn@test.com" } },
         }
-        const response = await prisma.notification.create({
-            data,
-        });
-        console.log(`1Added New Notification ${JSON.stringify(response)}`);
-        return response;
+        let response;
+        try {
+            response = await prisma.notification.create({
+                data,
+            });
+        }
+        catch (e) {
+            console.log(e.message);
+        }
+        finally {
+            console.log(`1Added New Notification ${JSON.stringify(response)}`);
+            return response;
+        }
     }
 
     async sendNotification(notification) {
