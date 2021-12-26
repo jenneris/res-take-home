@@ -63,56 +63,58 @@ app.get(`/api/user`, async (req, res) => {
 })
 
 app.post(`/api/user`, async (req, res) => {
-  const result = await prisma.user.create({
+  const user = await prisma.user.create({
     data: {
       ...req.body,
     },
   })
-  res.json(result)
+  res.json(user)
 })
 
 app.post(`/api/notification`, async (req, res) => {
-  const { title, content, creatorEmail } = req.body
-  const result = await prisma.notification.create({
+  const { title, content, creatorEmail, impact_area, impact_location } = req.body
+  const notifications = await prisma.notification.create({
     data: {
       title,
       content,
       has_read: false,
       creator: { connect: { email: creatorEmail } },
+      impact_area,
+      impact_location,
     },
   })
-  res.json(result)
+  res.json(notifications)
 })
 
 app.put('/api/notification/:id', async (req, res) => {
   const { id } = req.params
-  const post = await prisma.notification.update({
+  const notifications = await prisma.notification.update({
     where: {
       id: parseInt(id),
     },
     data: { has_read: false },
   })
-  res.json(post)
+  res.json(notifications)
 })
 
 app.delete(`/api/notification/:id`, cors(), async (req, res) => {
   const { id } = req.params
-  const post = await prisma.notification.delete({
+  const notifications = await prisma.notification.delete({
     where: {
       id: parseInt(id),
     },
   })
-  res.json(post)
+  res.json(notifications)
 })
 
 app.get(`/api/notification/:id`, async (req, res) => {
   const { id } = req.params
-  const post = await prisma.notification.findUnique({
+  const notifications = await prisma.notification.findUnique({
     where: {
       id: parseInt(id),
     },
   })
-  res.json(post)
+  res.json(notifications)
 })
 
 app.get('/api/notification', async (req, res) => {
@@ -123,9 +125,9 @@ app.get('/api/notification', async (req, res) => {
   res.json(notifications)
 })
 
-app.get('/api/filterPosts', async (req, res) => {
+app.get('/api/notification', async (req, res) => {
   const { searchString } = req.query
-  const draftPosts = await prisma.notification.findMany({
+  const notifications = await prisma.notification.findMany({
     where: {
       OR: [
         {
@@ -141,7 +143,19 @@ app.get('/api/filterPosts', async (req, res) => {
       ],
     },
   })
-  res.json(draftPosts)
+  res.json(notifications)
+})
+
+app.get('/api/notification/user/:id', async (req, res) => {
+  const { id } = req.params
+  const notifications = await prisma.notification.findMany({
+    where: {
+      creator_id: {
+        not: parseInt(id),
+      },
+    },
+  })
+  res.json(notifications)
 })
 
 server.listen(PORT, () => {

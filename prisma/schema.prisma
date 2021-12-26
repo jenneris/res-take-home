@@ -8,18 +8,22 @@ datasource db {
 }
 
 model User {
-  email String  @unique
-  id    Int     @id @default(autoincrement())
-  name  String?
+  email        String         @unique
+  id           Int            @id @default(autoincrement())
+  name         String?
+  impact_area  String?
+  impact_location     String?
   notification Notification[]
 }
 
 model Notification {
-  creator_id   Int?
+  creator_id  Int?
   content     String?
-  id          Int     @id @default(autoincrement())
-  has_read    Boolean @default(false)
+  id          Int      @id @default(autoincrement())
+  has_read    Boolean  @default(false)
   title       String
-  creator     User?   @relation(fields: [creator_id], references: [id])
-  created_at   DateTime @default(now())
+  impact_area String?
+  impact_location    String?
+  creator     User?    @relation(fields: [creator_id], references: [id])
+  created_at  DateTime @default(now())
 }

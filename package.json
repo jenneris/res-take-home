@@ -3,11 +3,13 @@
   "version": "1.0.0",
   "license": "MIT",
   "scripts": {
-    "start": "REACT_APP_DEV_ENV=LOCAL react-scripts start",
+    "start": "REACT_APP_DEV_ENV=DEV react-scripts start",
+    "start:local": "REACT_APP_DEV_ENV=LOCAL react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject",
-    "server": "nodemon ./src/services/notifier.js"
+    "dev": "node ./src/services/notifier.js",
+    "test:server": "jest"
   },
   "dependencies": {
     "@emotion/react": "^11.7.1",
@@ -46,6 +48,7 @@
     ]
   },
   "devDependencies": {
+    "jest": "^27.4.5",
     "nodemon": "^2.0.15"
   }
 }

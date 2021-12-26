@@ -39,7 +39,10 @@ class Connector {
             title: notification.title,
             content: ` content: ${notification.content}`,
             has_read: false,
-            creator: { connect: { email: "jenn@test.com" } },
+            creator_id: notification.creator_id,
+            impact_area: notification.impactArea,
+            impact_location: notification.impactLocation,
+            // creator: { connect: { email: "jenn@test.com" } },
         }
         const response = await prisma.notification.create({
             data,
@@ -61,10 +64,11 @@ class Connector {
     }
     async handleNotification(value) {
         const notification = {
-            // id: uuidv4(),
-            user: users.get(this.socket) || defaultUser,
+            creator_id: value.creator_id || defaultUser,
             title: value.title,
-            content: value.content
+            content: value.content,
+            impactArea: value.impactArea,
+            impactLocation: value.impactLocation,
         };
 
         notifications.add(notification);

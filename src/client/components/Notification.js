@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import NotificationsNoneIcon from '@mui/icons-material/NotificationsNone';
 import NotificationsIcon from '@mui/icons-material/Notifications';
-import { getNotifications, clearNotifications } from "../../services/uisvc";
+import { getUserNotifications, clearNotifications } from "../../services/uisvc";
 import ClearAllIcon from '@mui/icons-material/ClearAll';
 import Box from '@mui/material/Box';
 import List from '@mui/material/List';
@@ -16,6 +16,8 @@ import Popover from '@mui/material/Popover';
 import Badge from '@mui/material/Badge';
 import IconButton from '@mui/material/IconButton';
 import Tooltip from '@mui/material/Tooltip';
+import Typography from '@mui/material/Typography';
+
 import { makeStyles } from '@mui/styles';
 
 const useStyles = makeStyles({
@@ -27,8 +29,8 @@ const useStyles = makeStyles({
   }
 });
 
-
-const Notification = ({ socket }) => {
+export default function Notification({ socket, currentUserId }) {
+  // const Notification = ({ socket, currentUserId }) => {
 
   const [anchorEl, setAnchorEl] = useState(null);
 
@@ -38,11 +40,14 @@ const Notification = ({ socket }) => {
 
   const [notificationList, setNotificationList] = useState({});
 
+  useEffect(() => {
+    console.log(`current user changed: ${JSON.stringify(currentUserId)}`);
+    getNotificationInfo(currentUserId);
+  }, [currentUserId]);
 
   useEffect(() => {
-    getNotificationInfo();
     const notificationListener = (notification) => {
-      console.log(`received notification............. ${JSON.stringify(notification)}`);
+      console.log(`received notification: ${JSON.stringify(notification)}`);
       setNotificationList((prevNotifications) => {
         const newNotifications = { ...prevNotifications };
         newNotifications[notification.id] = notification;
@@ -70,11 +75,11 @@ const Notification = ({ socket }) => {
 
   const classes = useStyles();
 
-  const getNotificationInfo = async () => {
+  const getNotificationInfo = async (currentUserId) => {
     setIsLoading(true);
     try {
       console.log("Getting notifications.......");
-      const notifications = await getNotifications('user');
+      const notifications = await getUserNotifications(currentUserId);
       setNotificationList(notifications);
     } catch (e) {
       console.log(e)
@@ -109,17 +114,38 @@ const Notification = ({ socket }) => {
   let clearAllIcon;
 
   if (!isLoading && notificationList && notificationList !== null) {
-    totalCount = Object.keys(notificationList).length;
+    // totalCount = Object.keys(notificationList).length;
     for (const notification in notificationList) {
-      notificationListInfo.push(
-        <ListItem key={notificationList[notification].id} disablePadding>
-          <ListItemButton>
-            <ListItemIcon>
-              <EmailIcon />
-            </ListItemIcon>
-            <ListItemText primary={notificationList[notification].title} secondary={notificationList[notification].content} />
-          </ListItemButton>
-        </ListItem>)
+      if (parseInt(notificationList[notification].creator_id) !== parseInt(currentUserId)) {
+        totalCount++;
+        notificationListInfo.push(
+          <ListItem alignItems="flex-start" key={notificationList[notification].id} disablePadding>
+            <ListItemButton>
+              <ListItemIcon>
+                <EmailIcon />
+              </ListItemIcon>
+              <ListItemText
+                primary={notificationList[notification].title}
+                secondary={
+                  <span>
+                    <Typography
+                      sx={{ display: 'inline' }}
+                      component="span"
+                      variant="subtitle1"
+                      color="text.primary"
+                    >
+                      {notificationList[notification].content}
+                    </Typography>
+                    --Area of Impact: {notificationList[notification].impact_area}
+
+                    --Impact Location: {notificationList[notification].impact_location}
+                  </span>
+
+                }
+              />
+            </ListItemButton>
+          </ListItem>)
+      }
     }
   }
   if (totalCount > 0) {
@@ -185,6 +211,4 @@ const Notification = ({ socket }) => {
 
     </Grid>
   );
-
 }
-export default Notification;
