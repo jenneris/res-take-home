@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { getUserList } from "../../services/uisvc";
+import { getUserList } from "../services/uisvc";
 import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown';
 import PersonIcon from '@mui/icons-material/Person';
 import Box from '@mui/material/Box';

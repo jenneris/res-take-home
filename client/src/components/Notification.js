@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import NotificationsNoneIcon from '@mui/icons-material/NotificationsNone';
 import NotificationsIcon from '@mui/icons-material/Notifications';
-import { getUserNotifications, clearNotifications } from "../../services/uisvc";
+import { getUserNotifications, clearNotifications } from "../services/uisvc";
 import ClearAllIcon from '@mui/icons-material/ClearAll';
 import Box from '@mui/material/Box';
 import List from '@mui/material/List';

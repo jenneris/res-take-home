@@ -1,5 +1,5 @@
 // import {ENV, NOTIFICATIONS_URL, USERS_URL} from '../constants.js';
-import { ENV, USERS_URL, NOTIFICATIONS_URL } from '../constants.js';
+import { ENV, USERS_URL, NOTIFICATIONS_URL } from './constants.js';
 
 const getQueryUrl = (params, initialUrl) => {
 
