@@ -18,7 +18,7 @@ const prisma = new PrismaClient({
 
 var notify = require('./Connector');
 
-const PORT = process.env.PORT || 3001
+const PORT = 3001;
 
 // const CLIENT_ADDR = "https://jenn-test-app.herokuapp.com";
 // const CLIENT_ADDR = "http://localhost:3000";
