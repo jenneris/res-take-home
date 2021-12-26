@@ -14,7 +14,9 @@ const getQueryUrl = (params, initialUrl) => {
 }
 
 export const getUserNotifications = async (id) => {
+
     const baseUrl = ENV[process.env.REACT_APP_DEV_ENV].BASE_URL;
+    console.log(baseUrl)
     const notificationUrl = `${baseUrl}${NOTIFICATIONS_URL}`;
     const response = await fetch(`${notificationUrl}/user/${id}`);
     const data = await response.json();
