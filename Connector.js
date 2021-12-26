@@ -34,7 +34,7 @@ class Connector {
     }
 
     async saveNotification(notification) {
-        console.log("received notification....");
+        console.log(`received notification.... ${notification}`);
         let data = {
             title: notification.title,
             content: ` content: ${notification.content}`,
