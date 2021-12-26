@@ -15,7 +15,8 @@ export default function App() {
     };
 
     useEffect(() => {
-        const newSocket = io(`http://${window.location.hostname}:3001`);
+        // const newSocket = io(`http://${window.location.hostname}:3001`);
+        const newSocket = io(`http://${window.location.hostname}`);
         setSocket(newSocket);
         setCurrentUserId(currentUserId || "1");
         return () => newSocket.close();
