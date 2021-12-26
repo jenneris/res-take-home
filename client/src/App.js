@@ -4,6 +4,7 @@ import Notification from './components/Notification'
 import NewNotification from './components/NewNotification'
 import User from './components/User'
 import Grid from '@mui/material/Grid';
+import { ENV } from './services/constants';
 
 export default function App() {
 
@@ -16,7 +17,10 @@ export default function App() {
 
     useEffect(() => {
         // const newSocket = io(`http://${window.location.hostname}:3001`);
-        const newSocket = io(`https://platform-notification-service.herokuapp.com`);
+        const baseUrl = ENV[process.env.REACT_APP_DEV_ENV].SOCKET_URL;
+        console.log(baseUrl)
+        const newSocket = io(baseUrl);
+        // const newSocket = io(`https://platform-notification-service.herokuapp.com`);
         setSocket(newSocket);
         setCurrentUserId(currentUserId || "1");
         return () => newSocket.close();

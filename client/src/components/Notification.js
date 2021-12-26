@@ -114,8 +114,13 @@ export default function Notification({ socket, currentUserId }) {
   let clearAllIcon;
 
   if (!isLoading && notificationList && notificationList !== null) {
-    // totalCount = Object.keys(notificationList).length;
     for (const notification in notificationList) {
+      if(!notificationList[notification].impactArea && notificationList[notification].impact_area){
+        notificationList[notification].impactArea = notificationList[notification].impact_area;
+      }
+      if(!notificationList[notification].impactLocation && notificationList[notification].impact_location){
+        notificationList[notification].impactLocation = notificationList[notification].impact_location;
+      }
       if (parseInt(notificationList[notification].creator_id) !== parseInt(currentUserId)) {
         totalCount++;
         notificationListInfo.push(
@@ -136,9 +141,9 @@ export default function Notification({ socket, currentUserId }) {
                     >
                       {notificationList[notification].content}
                     </Typography>
-                    --Area of Impact: {notificationList[notification].impact_area}
+                    --Area of Impact: {notificationList[notification].impactArea}
 
-                    --Impact Location: {notificationList[notification].impact_location}
+                    --Impact Location: {notificationList[notification].impactLocation}
                   </span>
 
                 }

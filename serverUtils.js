@@ -30,160 +30,131 @@ async function saveNotification(notification) {
             impact_location: notification.impactLocation,
         }
     }
-    let response;
     try {
         response = await prisma.notification.create({
             data,
         });
+        console.log(`Added New Notification ${JSON.stringify(response)}`);
         return response;
     }
     catch (e) {
         console.log(e.message);
-    }
-    finally {
-        console.log(`Added New Notification ${JSON.stringify(response)}`);
-
     }
 }
 
 async function updateNotification(id) {
-    let response;
     try {
         response = await prisma.notification.update({
             where: {
-              id: parseInt(id),
+                id: parseInt(id),
             },
             data: { has_read: true },
-          })
+        })
+        console.log(`Updated Notification ${JSON.stringify(response)}`);
         return response;
     }
     catch (e) {
         console.log(e.message);
-    }
-    finally {
-        console.log(`Updated Notification ${JSON.stringify(response)}`);
     }
 }
 
 async function getAllUsers() {
-    let response;
     try {
-        response = await prisma.user.findMany();
-
+        const response = await prisma.user.findMany();
+        console.log(`Got All Users ${JSON.stringify(response)}`);
         return response;
     }
     catch (e) {
         console.log(e.message);
-    }
-    finally {
-        console.log(`Got All Users ${JSON.stringify(response)}`);
     }
 }
 
 async function createUser() {
-    let response;
     try {
         response = await prisma.user.create({
             data,
-          });
-
+        });
+        console.log(`Created User: ${JSON.stringify(response)}`);
         return response;
     }
     catch (e) {
         console.log(e.message);
-    }
-    finally {
-        console.log(`Created User: ${JSON.stringify(response)}`);
     }
 }
 
 async function getNotificationsNotByUser(id) {
-    let response;
     try {
         const response = await prisma.notification.findMany({
             where: {
-              creator_id: {
-                not: parseInt(id),
-              },
+                creator_id: {
+                    not: parseInt(id),
+                },
             },
-          })
-
+        })
+        console.log(`This Users Notifications: ${JSON.stringify(response)}`);
         return response;
     }
     catch (e) {
         console.log(e.message);
     }
     finally {
-        console.log(`This Users Notifications: ${JSON.stringify(response)}`);
     }
 }
 
 async function deleteNotification(id) {
-    let response;
     try {
         const response = await prisma.notification.delete({
             where: {
-              id: parseInt(id),
+                id: parseInt(id),
             },
-          })
-
+        })
+        console.log(`Deleted Notification: ${JSON.stringify(response)}`);
         return response;
     }
     catch (e) {
         console.log(e.message);
-    }
-    finally {
-        console.log(`Deleted Notification: ${JSON.stringify(response)}`);
     }
 }
 
 async function getNotification(id) {
-    let response;
     try {
-        const response = await prisma.notification.findUnique({
+        response = await prisma.notification.findUnique({
             where: {
-              id: parseInt(id),
+                id: parseInt(id),
             },
-          })
-
+        })
+        console.log(`Deleted Notification: ${JSON.stringify(response)}`);
         return response;
     }
     catch (e) {
         console.log(e.message);
-    }
-    finally {
-        console.log(`Deleted Notification: ${JSON.stringify(response)}`);
     }
 }
 
 
 async function searchNotifications(searchString) {
-    let response;
     try {
         const response = await prisma.notification.findMany({
             where: {
-              OR: [
-                {
-                  title: {
-                    contains: searchString,
-                  },
-                },
-                {
-                  content: {
-                    contains: searchString,
-                  },
-                },
-              ],
+                OR: [
+                    {
+                        title: {
+                            contains: searchString,
+                        },
+                    },
+                    {
+                        content: {
+                            contains: searchString,
+                        },
+                    },
+                ],
             },
-          })
-
+        })
+        console.log(`Deleted Notification: ${JSON.stringify(response)}`);
         return response;
     }
     catch (e) {
         console.log(e.message);
-    }
-    finally {
-        console.log(`Deleted Notification: ${JSON.stringify(response)}`);
     }
 }
 
