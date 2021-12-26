@@ -11,6 +11,8 @@ const notifications = new Set();
 
 const notificationExpirationTimeMS = 5 * 2 * 1000;
 
+const { saveNotification } = require('./server');
+
 class Connector {
     constructor(io, socket) {
         this.socket = socket;
@@ -29,33 +31,6 @@ class Connector {
         socket.on('connect_error', (err) => {
             console.log(`connect_error due to ${err.message}`);
         });
-    }
-
-    async saveNotification(notification) {
-        console.log(`received notification.... ${notification}`);
-        let data = {
-            title: notification.title,
-            content: ` ${notification.content}`,
-            has_read: false,
-            creator_id: parseInt(notification.creator_id) || 1,
-            creator: { connect: { email: notification.creatorEmail } },
-            impact_area: notification.impactArea,
-            impact_location: notification.impactLocation,
-            // creator: { connect: { email: "jenn@test.com" } },
-        }
-        let response;
-        try {
-            response = await prisma.notification.create({
-                data,
-            });
-        }
-        catch (e) {
-            console.log(e.message);
-        }
-        finally {
-            console.log(`1Added New Notification ${JSON.stringify(response)}`);
-            return response;
-        }
     }
 
     async sendNotification(notification) {
@@ -79,7 +54,7 @@ class Connector {
         };
 
         notifications.add(notification);
-        const response = await this.saveNotification(notification);
+        const response = await saveNotification(notification);
         console.log(`Added New Notification ${JSON.stringify(response)}`);
         notification.id = response.id;
         this.sendNotification(notification);
@@ -94,10 +69,12 @@ class Connector {
     }
 }
 
+
+
 function notify(io) {
     io.on('connection', (socket) => {
         new Connector(io, socket);
     });
 };
 
-module.exports = {notify, saveNotification};
+module.exports = notify;

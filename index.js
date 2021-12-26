@@ -16,7 +16,8 @@ const prisma = new PrismaClient({
   log: ['query', 'info', 'warn', 'error'],
 })
 
-var { notify, saveNotification } = require('./Connector');
+const { notify } = require('./Connector');
+const { saveNotification } = require('./server');
 
 const PORT = process.env.PORT || 3001
 
