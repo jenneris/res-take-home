@@ -3,7 +3,9 @@
   "version": "1.0.0",
   "license": "MIT",
   "scripts": {
-    "start": "REACT_APP_DEV_ENV=DEV react-scripts start",
+    "start": "node ./src/services/notifier.js",
+    "heroku-postbuild": "cd client && npm install && npm run build",
+    "start:temp": "REACT_APP_DEV_ENV=DEV react-scripts start",
     "start:local": "REACT_APP_DEV_ENV=LOCAL react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test",
