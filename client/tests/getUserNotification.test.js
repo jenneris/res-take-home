@@ -25,7 +25,7 @@ describe('src/services/uisvc', () => {
     expect(json.length).toEqual(2)
   });
 
-  it('Retrievevs deletes notifications', async () => {
+  it('verifies api for deleting notifications', async () => {
     const json = await clearNotifications(notificationRecords);
     expect(global.fetch.mock.calls).toEqual([
       ['http://localhost:3001/api/notification/1',{ method: 'DELETE' }], // First call
