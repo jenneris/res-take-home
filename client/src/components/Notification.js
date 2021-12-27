@@ -65,7 +65,7 @@ export default function Notification({ socket, currentUserId }) {
 
     socket.on('new-notification', notificationListener);
     socket.on('deleteNotification', deleteNotificationListener);
-    socket.emit('getNotifications');
+    // socket.emit('getNotifications');
 
     return () => {
       socket.off('new-notification', notificationListener);

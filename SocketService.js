@@ -21,6 +21,7 @@ class SocketService {
 
         socket.on('getNotifications', () => this.getNotifications());
         socket.on('new-notification', (value) => this.handleNotification(value));
+        socket.on('deleteMessage', (notificationId) => deleteMessageListener(notificationId));
         socket.on('connection', (socket) => {
             console.log('Connected');
         });
@@ -32,6 +33,14 @@ class SocketService {
             console.log(`connect_error due to ${err.message}`);
         });
     }
+
+    deleteMessageListener(notificationId){
+        setMessages((prevNotifications) => {
+          const newMessages = {...prevNotifications};
+          delete newMessages[notificationId];
+          return newMessages;
+        });
+      }
 
     async sendNotification(notification) {
 
@@ -60,7 +69,8 @@ class SocketService {
         notification.id = response.id;
         this.sendNotification(notification);
         console.log(`Added New Notification ${JSON.stringify(response)}`);
-
+        // notifications.delete(notification);
+        // this.io.sockets.emit('deleteNotification', notification.id);
 
         // setTimeout(
         //   () => {
