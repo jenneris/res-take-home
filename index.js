@@ -1,6 +1,5 @@
 const express = require('express');
 const bodyParser = require('body-parser');
-const { PrismaClient } = require('@prisma/client');
 const cors = require('cors');
 const app = express();
 const server = require('http').Server(app);
@@ -12,11 +11,7 @@ const io = socketio(server, {
   }
 });
 
-const prisma = new PrismaClient({
-  log: ['query', 'info', 'warn', 'error'],
-})
-
-const notify = require('./Connector');
+const notify = require('./SocketService');
 const {
   saveNotification,
   updateNotification,

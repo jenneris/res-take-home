@@ -4,7 +4,7 @@ const prisma = new PrismaClient({
     log: ['query', 'info', 'warn', 'error'],
 })
 
-const notify = require('./Connector');
+const notify = require('./SocketService');
 
 
 async function saveNotification(notification) {

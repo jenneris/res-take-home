@@ -16,11 +16,9 @@ const getQueryUrl = (params, initialUrl) => {
 export const getUserNotifications = async (id) => {
 
     const baseUrl = ENV[process.env.REACT_APP_DEV_ENV].BASE_URL;
-    console.log(baseUrl)
     const notificationUrl = `${baseUrl}${NOTIFICATIONS_URL}`;
     const response = await fetch(`${notificationUrl}/user/${id}`);
-    const data = await response.json();
-    return data;
+    return response.json();
 }
 
 export const searchNotifications = async (params) => {
@@ -28,23 +26,20 @@ export const searchNotifications = async (params) => {
     const notificationUrl = `${baseUrl}${NOTIFICATIONS_URL}`;
     const queryUrl = getQueryUrl(params, notificationUrl);
     const response = await fetch(queryUrl);
-    const data = await response.json();
-    return data;
+    return response.json();
 }
 
 export const getNotifications = async () => {
 
     const baseUrl = ENV[process.env.REACT_APP_DEV_ENV].BASE_URL;
     const response = await fetch(`${baseUrl}${NOTIFICATIONS_URL}`);
-    const data = await response.json();
-    return data;
+    return response.json();
 }
 
 export const getUserList = async () => {
     const baseUrl = ENV[process.env.REACT_APP_DEV_ENV].BASE_URL;
     const response = await fetch(`${baseUrl}${USERS_URL}`);
-    const data = await response.json();
-    return data;
+    return response.json();
 }
 
 export const clearNotifications = async (notifications) => {
@@ -53,8 +48,7 @@ export const clearNotifications = async (notifications) => {
     notifications.forEach(async function (notificaton) {
         console.log(notificaton.id)
         const response = await fetch(`${baseUrl}${NOTIFICATIONS_URL}/${notificaton.id}`, { method: 'DELETE' });
-        const data = await response.json();
-        responses.push(data);
+        responses.push(response.json());
     })
     return responses;
 }

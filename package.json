@@ -6,7 +6,7 @@
   "scripts": {
     "start": "node index.js",
     "heroku-postbuild": "cd client && npm install && npm run build",
-    "test:server": "jest"
+    "test": "npx jest"
   },
   "dependencies": {
     "@emotion/react": "^11.7.1",

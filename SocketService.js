@@ -13,7 +13,7 @@ const notificationExpirationTimeMS = 5 * 2 * 1000;
 
 const  { saveNotification } = require('./serverUtils');
 
-class Connector {
+class SocketService {
     constructor(io, socket) {
         this.socket = socket;
         this.io = io;
@@ -54,10 +54,13 @@ class Connector {
         };
 
         notifications.add(notification);
+        // since we set the id when the record is saved we save the record and then send out push notification
+        // could use uuid to avaoid or maybe we wouldn't want to send out a push unless we know it is a successfully saved record
         const response = await saveNotification(notification);
-        console.log(`Added New Notification ${JSON.stringify(response)}`);
         notification.id = response.id;
         this.sendNotification(notification);
+        console.log(`Added New Notification ${JSON.stringify(response)}`);
+
 
         // setTimeout(
         //   () => {
@@ -73,7 +76,7 @@ class Connector {
 
 function notify(io) {
     io.on('connection', (socket) => {
-        new Connector(io, socket);
+        new SocketService(io, socket);
     });
 };
 
