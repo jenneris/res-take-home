@@ -69,7 +69,7 @@ async function getAllUsers() {
     }
 }
 
-async function createUser() {
+async function createUser(data) {
     try {
         response = await prisma.user.create({
             data,
