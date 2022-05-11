@@ -1,19 +1,14 @@
-name: Deploy
+name: Push Container to Heroku
 
-on:
-  push:
-    branches:
-      - main
+on: [push]
 
 jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
-      - uses: akhileshns/heroku-deploy@v3.12.12 # This is the action
-        with:
-          heroku_api_key: ${{secrets.HEROKU_API_KEY}}
-          heroku_app_name: "jenn-test-app" #Must be unique in Heroku
-          heroku_email: "jennifer.g.everhart@gmail.com"
-          healthcheck: "https://jenn-test-app.herokuapp.com/health"
+    - uses: actions/checkout@v1
+    - name: Login to Heroku Container registry
+      env: 
+        HEROKU_API_KEY: ${{ secrets.HEROKU_API_KEY }}
+      run: heroku container:login
 
