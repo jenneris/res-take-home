@@ -13,5 +13,5 @@ jobs:
       - uses: akhileshns/heroku-deploy@v3.12.12 # This is the action
         with:
           heroku_api_key: ${{secrets.HEROKU_API_KEY}}
-          heroku_app_name: "platform-client-portal" #Must be unique in Heroku
+          heroku_app_name: "jenn-test-app" #Must be unique in Heroku
           heroku_email: "jennifer.g.everhart@gmail.com"
